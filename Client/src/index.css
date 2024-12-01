@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  min-height: 100vh;
+  font-family: 'Poppins', sans-serif;
+  transition: background-color 0.3s ease;
+}
+
+#root {
+  height: 100%;
+  width: 100%;
+}
