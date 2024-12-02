@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import Authentication from './Pages/Authentication.jsx';
-import Dashboard from './components/Dashboard';
+import Dashboard from './components/DashBoard.jsx';
 import Home from './pages/Home';
-import Workouts from './components/Workouts';
-import Tutorial from './components/Tutorial';
+import Workouts from './components/Workouts.jsx';
+import Tutorial from './components/Tutorial.jsx';
 import Cookies from 'js-cookie';  // Import js-cookie
 
 function App() {
