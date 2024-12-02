@@ -21,7 +21,7 @@ app.use(cookieParser()); // Use cookie-parser to parse cookies
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
-    origin: 'http://localhost:5173',  // Your React frontend's origin
+    origin: 'https://fitmentor-six.vercel.app/',  // Your React frontend's origin
     credentials: true                 // Allow credentials like cookies
 }));
 app.use(session({
