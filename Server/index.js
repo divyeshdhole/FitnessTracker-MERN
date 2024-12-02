@@ -9,7 +9,7 @@ const mongoose = require('mongoose');
 const passport = require('passport');
 
 //passport local mongoose plugin
-const passportLocalMongoose = require('passport-Local-Mongoose');
+const passportLocalMongoose = require('passport-local-mongoose');
 const session = require('express-session');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
