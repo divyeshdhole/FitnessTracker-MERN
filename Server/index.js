@@ -20,16 +20,21 @@ app.use(cookieParser()); // Use cookie-parser to parse cookies
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+const allowedOrigins = [
+    'https://fitmentor-six.vercel.app',
+    'http://localhost:3000'
+];
 app.use(cors({
-    origin: 'https://fitmentor-six.vercel.app/',  // Your React frontend's origin
-    credentials: true,             // Allow credentials like cookies
-    methods: 'GET,POST,PUT,DELETE',   // Specify allowed methods
-    allowedHeaders: 'Content-Type,Authorization'  // Specify allowed headers
-}));
-app.use(session({
-    secret: 'your_secret',
-    resave: false,
-    saveUninitialized: true,
+    origin: (origin, callback) => {
+        if (allowedOrigins.includes(origin) || !origin) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
+    methods: 'GET,POST,PUT,DELETE',
+    allowedHeaders: 'Content-Type,Authorization'
 }));
 
 //connect to MongoDB 
