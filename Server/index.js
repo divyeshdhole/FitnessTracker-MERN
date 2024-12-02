@@ -143,7 +143,7 @@ app.post("/register", async (req, res) => {
     await User.register({ username: req.body.username }, req.body.password, function (err, user) {
         if (err) {
             console.log(err);
-            res.send(err)
+            return res.send(err)
         }
         const token = jwt.sign({ id: user._id }, secretKey, { expiresIn: "1d" });
         //saved the name of the user in database to
