@@ -19,7 +19,7 @@ const DashBoard = () => {
         console.log(token);
         const fetchData = async () => {
             try {
-                const response = await fetch('http://localhost:5000/dashboard', {
+                const response = await fetch('https://fitness-tracker-api-black.vercel.app/dashboard', {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,  // Include token in Authorization header
