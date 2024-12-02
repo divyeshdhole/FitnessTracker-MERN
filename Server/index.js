@@ -22,7 +22,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
     origin: 'https://fitmentor-six.vercel.app/',  // Your React frontend's origin
-    credentials: true                 // Allow credentials like cookies
+    credentials: true,             // Allow credentials like cookies
+    methods: 'GET,POST,PUT,DELETE',   // Specify allowed methods
+    allowedHeaders: 'Content-Type,Authorization'  // Specify allowed headers
 }));
 app.use(session({
     secret: 'your_secret',
