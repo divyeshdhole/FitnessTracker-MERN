@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import Authentication from './Pages/Authentication.jsx';
 import Dashboard from './components/DashBoard.jsx';
-import Home from './pages/Home';
+import Home from './pages/Home.jsx';
 import Workouts from './components/Workouts.jsx';
 import Tutorial from './components/Tutorial.jsx';
 import Cookies from 'js-cookie';  // Import js-cookie
