@@ -14,7 +14,7 @@ const Login = ({ setIsUser }) => {
         setError(null);  // Clear any previous errors
 
         try {
-            const response = await fetch('https://fitness-tracker-api-black.vercel.app/login', {
+            const response = await fetch('https://fitness-tracker-api-dusky.vercel.app/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
