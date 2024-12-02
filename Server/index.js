@@ -105,6 +105,13 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 passport.use(User.createStrategy());
 
+
+//simple check / route for check
+
+app.get('/', async (req, res) => {
+    return res.send("hello world");
+});
+
 //Login Route
 app.post("/login", async (req, res) => {
     try {
