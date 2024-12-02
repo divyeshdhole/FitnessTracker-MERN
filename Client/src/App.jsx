@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
-import Authentication from './pages/Authentication';
+import Authentication from './Pages/Authentication';
 import Dashboard from './components/Dashboard';
 import Home from './pages/Home';
 import Workouts from './components/Workouts';
