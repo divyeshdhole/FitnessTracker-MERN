@@ -43,7 +43,18 @@ app.use(cors({
 mongoose.connect("mongodb+srv://fitmentor:div2123@cluster0.gzf9r.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0").then(() => {
     console.log("Connected to MongoDB");
 });
+//session use
 
+app.use(session({
+    secret: secretKey,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        maxAge: 60 * 60 * 1000, // 1 hour
+        sameSite: true,
+        secure: false, // Only use HTTPS
+    }
+}));
 
 //use passport local mongoose plugin
 
