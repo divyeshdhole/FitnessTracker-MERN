@@ -30,10 +30,13 @@ app.use(session({
     saveUninitialized: true,
 }));
 
-//connect to MongoDB
-mongoose.connect("mongodb://localhost:27017/Fit").then(() => {
+//connect to MongoDB 
+
+
+mongoose.connect("mongodb+srv://fitmentor:div2123@cluster0.gzf9r.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0").then(() => {
     console.log("Connected to MongoDB");
 });
+
 
 //use passport local mongoose plugin
 
