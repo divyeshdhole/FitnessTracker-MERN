@@ -25,7 +25,7 @@ const AddWorkout = ({ setIsWorkoutAdded }) => {
         e.preventDefault();
 
         try {
-            const response = await fetch('https://fitness-tracker-api-dusky.vercel.app/addWorkout', {
+            const response = await fetch('http://localhost:5000/addWorkout', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,

@@ -15,7 +15,7 @@ const Workouts = () => {
         // Fetch workouts data from server or API
         const fetchData = async () => {
             try {
-                const response = await fetch(`https://fitness-tracker-api-dusky.vercel.app/workouts/${date}`, {
+                const response = await fetch(`http://localhost:5000/workouts/${date}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,  // Include token in Authorization header
