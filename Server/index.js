@@ -20,14 +20,26 @@ app.use(cookieParser()); // Use cookie-parser to parse cookies
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
 
+const corsOptions = {
+    origin: ['https://fitmentor-six.vercel.app'], // Allow specific origin
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],   // Allow specific HTTP methods
+    allowedHeaders: ['Content-Type', 'Authorization'], // Allow specific headers
+    credentials: true, // Allow cookies and credentials
+};
+
+app.use(cors(corsOptions));
+
+// Handle preflight requests explicitly
+app.options('*', cors(corsOptions));
 //connect to MongoDB 
 
 
 mongoose.connect("mongodb+srv://fitmentor:div2123@cluster0.gzf9r.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0").then(() => {
     console.log("Connected to MongoDB");
-});
+}).catch((error) => {
+    console.error("MongoDB connection error:", error);
+});;
 //session use
 
 app.use(session({
