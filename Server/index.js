@@ -158,25 +158,60 @@ app.post("/login", async (req, res) => {
 
 //Register Route
 
+// app.post("/register", async (req, res) => {
+//     //check data type of req.body like int strig
+//     console.log(typeof req.body.password);
+
+//     await User.register({ username: req.body.username }, req.body.password, function (err, user) {
+//         if (err) {
+//             console.log(err);
+//             return res.send(err)
+//         }
+//         const token = jwt.sign({ id: user._id }, secretKey, { expiresIn: "1d" });
+//         //saved the name of the user in database to
+//         console.log(req.body.name);
+//         user.name = req.body.name;
+//         user.save();
+
+//         // Send token in HTTP-only cookie
+//         console.log(req.body.password)
+//         res.status(201).send({ message: "User registered", token });
+//     });
+// });
+
 app.post("/register", async (req, res) => {
-    //check data type of req.body like int strig
-    console.log(typeof req.body.password);
-
-    await User.register({ username: req.body.username }, req.body.password, function (err, user) {
-        if (err) {
-            console.log(err);
-            return res.send(err)
+    try {
+        // Check if required fields are present
+        if (!req.body.username || !req.body.password || !req.body.name) {
+            return res.status(400).json({ message: "Username, password, and name are required" });
         }
-        const token = jwt.sign({ id: user._id }, secretKey, { expiresIn: "1d" });
-        //saved the name of the user in database to
-        console.log(req.body.name);
-        user.name = req.body.name;
-        user.save();
 
-        // Send token in HTTP-only cookie
-        console.log(req.body.password)
+        console.log(typeof req.body.password); // Log the type of the password
+
+        // Register the user using Passport's register method
+        const user = new User({ username: req.body.username });
+        await User.register(user, req.body.password);
+
+        // Assign additional properties and save
+        user.name = req.body.name;
+        await user.save();
+
+        // Generate a JWT token
+        const token = jwt.sign({ id: user._id }, secretKey, { expiresIn: "1d" });
+
+        console.log(req.body.password); // Debugging logs
+
+        // Send a success response with the token
         res.status(201).send({ message: "User registered", token });
-    });
+    } catch (error) {
+        console.error("Error in /register:", error);
+
+        // Send a proper error response based on the type of error
+        if (error.name === 'UserExistsError') {
+            return res.status(409).json({ message: "User already exists" });
+        }
+        res.status(500).json({ message: "Internal server error" });
+    }
 });
 
 const getDashBoard = async (req, res) => {
