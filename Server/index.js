@@ -62,6 +62,7 @@ app.use(passport.session());
 
 //User Schema
 
+
 const userSchema = new mongoose.Schema({
     name: String,
     username: {
