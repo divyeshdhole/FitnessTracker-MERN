@@ -11,10 +11,10 @@ const Authentication = ({ setIsUser, isUser }) => {
     }
     const [isLogin, setIsLogin] = useState(false)
     return <div className="h-[100vh] w-full flex">
-        <div className="w-[50%] hidden md:block">
+        <div className="w-1/2 hidden sm:block">
             <img className="h-full w-full object-cover" src={fitness}></img>
         </div>
-        <div className='w-[50%]'>
+        <div className='w-full sm:w-1/2 flex justify-center items-center'>
             {isLogin ?
                 <div className='h-full w-full flex items-center justify-center flex-col gap-2'>
                     <Login setIsUser={setIsUser} />
