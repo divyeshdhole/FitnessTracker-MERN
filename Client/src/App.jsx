@@ -6,7 +6,7 @@ import Home from './Pages/Layout.jsx';
 import Workouts from './components/Workouts.jsx';
 import Tutorial from './components/Tutorial.jsx';
 import Cookies from 'js-cookie';  // Import js-cookie
-
+import url from './constant.js'
 function App() {
   const [isUser, setIsUser] = useState(false);  // Manage user login status
   const navigate = useNavigate();
@@ -17,7 +17,7 @@ function App() {
     const token = Cookies.get('token');  // Get token from cookies
     console.log(token);
     if (token) {
-      const res = await fetch('http://localhost:5000/verifyToken', {
+      const res = await fetch(url + '/verifyToken', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
