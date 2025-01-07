@@ -534,17 +534,16 @@ const generateResponse = async (req, res) => {
     // Prepare the complete prompt for the AI model
     const completePrompt = `
     Conversation History: ${JSON.stringify(sessions[sessionId])}
-    -They also have credits. If remind them that if credit is 0 then u cant chat like that.
-    -They have ${user.credit - 1} now so handle it too.
-    -if credit exeeds so reply like ur credit exeeds to add credits u can add workout on this platform and use them so like wise reply!
-    - If the user provides all required metrics (weight, height, goal, diet), generate a personalized workout and meal plan.
-    - Avoid spelling mistakes and carefully extract the usefull information and the content is like string and all formate provided u like object and all.
-    -provide plain text ok without object response is plain text.
-    - If metrics are missing, clearly state which ones and prompt the user for them.
-    - Avoid discussing topics unrelated to fitness give appropriate reply to user.
-    - if all metrics recive then type generate plan like string to user to get final response.
-    -if user ask about greetings then its fine u can reply but dont forgoet about fitness. maintain context .
-    -provide plan in structured way!
+    -Reply with the user's name.
+    -Remind them about credits; if credit = 0, inform them they can't chat.
+    -Mention their remaining credits as ${user.credit - 1} and prompt to add workouts for more credits if exhausted.
+    -If weight, height, goal, and diet are provided, generate a personalized workout and meal plan.
+    -Use plain text with no objects, avoiding spelling mistakes.
+    -If metrics are missing, specify clearly and prompt for them.
+    -Stay focused on fitness topics only.
+    -If all metrics are received, respond with "Generate Plan."
+    -Greetings are fine, but maintain fitness context.
+    -Provide structured plans.
     -
 
     `;
