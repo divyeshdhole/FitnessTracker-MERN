@@ -289,20 +289,20 @@ const getDashBoard = async (req, res) => {
         const totalWorkoutsToday = user.workouts.filter(
             (workout) => workout.date >= todayStart && workout.date <= todayEnd
         ).length;
-        console.log("total workouts today:", totalWorkoutsToday);
+        // console.log("total workouts today:", totalWorkoutsToday);
 
         //calculate total calories burnt by today by today date
-        { console.log(req.user.id) }
-        { console.log(todayStart, todayEnd) }
+        // { console.log(req.user.id) }
+        // { console.log(todayStart, todayEnd) }
         const todaysWorkouts = user.workouts.filter(
             (workout) => workout.date >= todayStart && workout.date <= todayEnd
         )
-        console.log("todays workouts:", todaysWorkouts);
+        // console.log("todays workouts:", todaysWorkouts);
         const totalCaloriesBurnedToday = todaysWorkouts.reduce(
             (total, workout) => total + workout.caloriesBurned,
             0
         );
-        console.log("total calories burned today:", totalCaloriesBurnedToday);
+        // console.log("total calories burned today:", totalCaloriesBurnedToday);
 
         //Calculate average calories burnt per workout for today
         const avgCaloriesBurnedPerWorkout =
@@ -413,8 +413,8 @@ const addWorkout = async (req, res) => {
         const caloriesBurned = durationInMinutes * caloriesBurntPerMinute * weightInKg;
         newWorkout.caloriesBurned = caloriesBurned;
         newWorkout.save();
-        console.log("Calories burned:", caloriesBurned);
-        console.log("saved");
+        // console.log("Calories burned:", caloriesBurned);
+        // console.log("saved");
 
         res.status(201).json({ message: "Workout added successfully!", workout: newWorkout, credit: user.credit });
     } catch (err) {
@@ -466,7 +466,7 @@ const getWorkouts = async (req, res) => {
         });
 
 
-        console.log(workouts);
+        // console.log(workouts);
         res.status(200).json(workouts);
     } catch (error) {
         console.error('Error fetching workouts:', error);
@@ -545,7 +545,7 @@ const generateResponse = async (req, res) => {
     - if all metrics recive then type generate plan like string to user to get final response.
     -if user ask about greetings then its fine u can reply but dont forgoet about fitness. maintain context .
     -provide plan in structured way!
-    -use previously generated response maintain context!
+    -
 
     `;
 
