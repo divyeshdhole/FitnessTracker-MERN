@@ -73,15 +73,13 @@ mongoose.connect("mongodb+srv://fitmentor:div2123@cluster0.gzf9r.mongodb.net/?re
 });;
 //session use
 
+const FileStore = require('session-file-store')(session);
+
 app.use(session({
-    secret: 'your_Secret_Key',              // Change this to a strong, secret key
-    resave: false,                        // Avoid resaving unmodified sessions
-    saveUninitialized: true,              // Save sessions even if uninitialized
-    cookie: {
-        secure: false,                    // Set to true only if using HTTPS
-        httpOnly: true,                   // Prevent client-side JS from accessing cookies
-        maxAge: 24 * 60 * 60 * 1000       // Cookie expiry time (1 day)
-    }
+    store: new FileStore({ path: './sessions' }),
+    secret: 'your_secret_key',
+    resave: false,
+    saveUninitialized: false
 }));
 
 //use passport local mongoose plugin
