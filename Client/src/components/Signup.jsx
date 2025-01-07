@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
+import url from '../constant';
 
 const Signup = ({ setIsUser }) => {
   const [name, setName] = useState(""); // New state for name
@@ -22,7 +23,7 @@ const Signup = ({ setIsUser }) => {
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:5000/register", {
+      const response = await fetch(url + "/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

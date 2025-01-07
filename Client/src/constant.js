@@ -1,2 +1,2 @@
-url_api = "https://localhost:5000";
-module.exports = url_api;
+const url_api = "https://fitmentor-api.onrender.com";
+export default url_api;

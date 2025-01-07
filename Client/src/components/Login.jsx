@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
+import url from '../constant';
 
 const Login = ({ setIsUser }) => {
   const [email, setEmail] = useState('');
@@ -15,7 +16,7 @@ const Login = ({ setIsUser }) => {
     setError(null); // Clear any previous errors
 
     try {
-      const response = await fetch('http://localhost:5000/login', {
+      const response = await fetch(url + '/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

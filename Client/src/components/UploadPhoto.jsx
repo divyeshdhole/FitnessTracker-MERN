@@ -2,6 +2,7 @@ import { useState } from "react";
 import { FaCamera } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 import Cookies from "js-cookie";
+import url from '../constant';
 
 const UploadPhoto = ({ handleProfileClick }) => {
     const [profilePhoto, setProfilePhoto] = useState(null);
@@ -25,7 +26,7 @@ const UploadPhoto = ({ handleProfileClick }) => {
         formData.append('profilePhoto', selectedFile); // Send the actual file, not URL
         const token = Cookies.get('token');
         try {
-            const response = await fetch('http://localhost:5000/upload-profile', {
+            const response = await fetch(url + '/upload-profile', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,  // Include token in Authorization header

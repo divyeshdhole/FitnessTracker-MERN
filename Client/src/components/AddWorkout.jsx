@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Cookies from 'js-cookie';
 import CategoryChart from './CategoryChart';
+import url from '../constant';
 const AddWorkout = ({ setIsWorkoutAdded }) => {
     const [workoutData, setWorkoutData] = useState({
         category: '',
@@ -23,9 +24,9 @@ const AddWorkout = ({ setIsWorkoutAdded }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         try {
-            const response = await fetch('http://localhost:5000/addWorkout', {
+
+            const response = await fetch(url + '/addWorkout', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -54,6 +55,7 @@ const AddWorkout = ({ setIsWorkoutAdded }) => {
 
 
     return (
+
         <div className="min-w-[350px] shadow-lg h-auto lg:w-[430px] p-4 rounded-lg w-full border border-gray">
             <h2 className="text-blue-500">Add a New Workout</h2>
             <form onSubmit={handleSubmit}>

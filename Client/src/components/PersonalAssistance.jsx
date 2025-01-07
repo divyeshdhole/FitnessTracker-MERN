@@ -3,6 +3,8 @@ import { TextField, Typography, Box, IconButton } from '@mui/material';
 import { ChatBubbleOutline, Send, Close, CookieSharp } from '@mui/icons-material';
 import Draggable from 'react-draggable';
 import Cookies from 'js-cookie'
+import url from '../constant';
+
 const PersonalAssistant = ({ update, setUpdate }) => {
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
@@ -36,7 +38,7 @@ const PersonalAssistant = ({ update, setUpdate }) => {
 
             try {
                 const token = Cookies.get('token');
-                const response = await fetch('http://localhost:5000/generate', {
+                const response = await fetch(url + '/generate', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

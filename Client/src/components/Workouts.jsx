@@ -3,6 +3,8 @@ import WorkoutCards from "./WorkoutCards";
 import ShimmerLoader from "./ShimmerLoader";
 import { useEffect, useState } from "react";
 import Cookies from 'js-cookie';
+import url from '../constant';
+
 const Workouts = () => {
     const [workouts, setWorkouts] = useState([]);
     const [error, setError] = useState(null);
@@ -15,7 +17,7 @@ const Workouts = () => {
         // Fetch workouts data from server or API
         const fetchData = async () => {
             try {
-                const response = await fetch(`http://localhost:5000/workouts/${date}`, {
+                const response = await fetch(`${url}/workouts/${date}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,  // Include token in Authorization header

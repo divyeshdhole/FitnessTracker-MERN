@@ -8,6 +8,7 @@ import WorkoutCards from './WorkoutCards';
 import Cookies from 'js-cookie';
 import ShimmerLoader from './Shimmers';
 import { useOutletContext } from 'react-router-dom';
+import url from '../constant';
 
 const DashBoard = () => {
     const { update, setUpdate } = useOutletContext();
@@ -22,7 +23,7 @@ const DashBoard = () => {
         console.log(token);
         const fetchData = async () => {
             try {
-                const response = await fetch('http://localhost:5000/dashboard', {
+                const response = await fetch(url + '/dashboard', {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,  // Include token in Authorization header
