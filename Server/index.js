@@ -14,6 +14,41 @@ const session = require('express-session');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
+
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+const genAI = new GoogleGenerativeAI("AIzaSyAjdJL8z8VhFEwsCrLxxC__kLKgFtJZAvA");
+const Fuse = require('fuse.js');
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/'); // Make sure the 'uploads' folder exists in your project
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+    }
+});
+
+// Initialize multer with storage settings and file size/type validation (optional)
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB limit
+    fileFilter: (req, file, cb) => {
+        const allowedTypes = /jpg|jpeg|png/;
+        const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+        const mimetype = allowedTypes.test(file.mimetype);
+
+        if (extname && mimetype) {
+            return cb(null, true);
+        } else {
+            cb(new Error('Only JPG, JPEG, and PNG files are allowed'));
+        }
+    }
+});
+app.use('/uploads', express.static('uploads'));
 const secretKey = "your_secret_key";  // Use environment variable in production
 //Middleware
 app.use(cookieParser()); // Use cookie-parser to parse cookies
@@ -21,12 +56,8 @@ app.use(cookieParser()); // Use cookie-parser to parse cookies
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const corsOptions = {
-    origin: ['*'], // Allow specific origin
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],   // Allow specific HTTP methods
-    allowedHeaders: ['Content-Type', 'Authorization'], // Allow specific headers
-    credentials: true, // Allow cookies and credentials
-};
+
+
 
 app.use(cors());
 
@@ -43,13 +74,13 @@ mongoose.connect("mongodb+srv://fitmentor:div2123@cluster0.gzf9r.mongodb.net/?re
 //session use
 
 app.use(session({
-    secret: secretKey,
-    resave: false,
-    saveUninitialized: false,
+    secret: 'your_Secret_Key',              // Change this to a strong, secret key
+    resave: false,                        // Avoid resaving unmodified sessions
+    saveUninitialized: true,              // Save sessions even if uninitialized
     cookie: {
-        maxAge: 60 * 60 * 1000, // 1 hour
-        sameSite: true,
-        secure: false, // Only use HTTPS
+        secure: false,                    // Set to true only if using HTTPS
+        httpOnly: true,                   // Prevent client-side JS from accessing cookies
+        maxAge: 24 * 60 * 60 * 1000       // Cookie expiry time (1 day)
     }
 }));
 
@@ -81,6 +112,14 @@ const userSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Workout'
         }], // Use an array of ObjectIds for referencing workouts
+    profilePhoto: {
+        type: String
+
+    },
+    credit: {
+        type: Number,
+        default: 3
+    }
 
 
 }, { timeseries: true });
@@ -108,6 +147,7 @@ const workoutSchema = new mongoose.Schema({
         default: Date.now,
     }
 });
+
 
 const Workout = mongoose.model('Workout', workoutSchema);
 userSchema.plugin(passportLocalMongoose, {
@@ -147,7 +187,7 @@ app.post("/login", async (req, res) => {
             const token = jwt.sign({ id: user._id }, secretKey, { expiresIn: "1d" });
 
             // Send token to the frontend
-            res.status(200).send({ message: "Logged in", token });
+            res.status(200).send({ message: "Logged in", token, user: { name: user.name, profilePhoto: user.profilePhoto, credit: user.credit } });
         });
     } catch (error) {
         console.error("Login error:", error);
@@ -203,7 +243,7 @@ app.post("/register", async (req, res) => {
         console.log(req.body.password); // Debugging logs
 
         // Send a success response with the token
-        res.status(201).send({ message: "User registered", token });
+        res.status(201).send({ message: "User registered", token, user: { name: user.name, profilePhoto: user.profilePhoto, credit: user.credit } });
     } catch (error) {
         console.error("Error in /register:", error);
 
@@ -365,6 +405,8 @@ const addWorkout = async (req, res) => {
         const user = await User.findById(req.user.id)
             .populate('workouts');
         user.workouts.push(newWorkout);
+        user.credit = user.credit + 1;
+
         user.save();
         // Calculate total calories burned for the new workout
         const durationInMinutes = duration;
@@ -376,7 +418,7 @@ const addWorkout = async (req, res) => {
         console.log("Calories burned:", caloriesBurned);
         console.log("saved");
 
-        res.status(201).json({ message: "Workout added successfully!", workout: newWorkout });
+        res.status(201).json({ message: "Workout added successfully!", workout: newWorkout, credit: user.credit });
     } catch (err) {
         console.log(err);
         res.status(500).json({ message: "Server error" });
@@ -395,7 +437,7 @@ const authMiddleware = (req, res, next) => {
     jwt.verify(token, 'your_secret_key', (err, decoded) => {
         if (err) {
             console.log("Failed to verify token")
-            return res.status(403).json({ message: 'Failed to authenticate token' });
+            return res.status(403).json({ message: 'Failed to authenticate token', success: false });
         }
 
         console.log(decoded);  // Log decoded token to see its contents
@@ -404,6 +446,9 @@ const authMiddleware = (req, res, next) => {
     });
 };
 
+const verifyToken = (req, res) => {
+    res.json({ message: 'Token verified!', success: true });
+};
 const getWorkouts = async (req, res) => {
     try {
         const userId = req.user.id; // Assuming you have `req.user` from auth middleware
@@ -431,6 +476,112 @@ const getWorkouts = async (req, res) => {
     }
 };
 
+const uploadProfile = async (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    try {
+        // Find user by ID (assuming `req.user` contains user ID)
+        const user = await User.findById(req.user.id);
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Save the file path to the user's profile photo field
+        user.profilePhoto = `/uploads/${req.file.filename}`;
+
+        // Save the user object with the new profile photo path
+        await user.save();
+
+        res.json({
+            message: 'File uploaded and profile updated successfully',
+            filePath: `/uploads/${req.file.filename}`,
+
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to upload profile photo' });
+    }
+};
+
+
+// Function to extract data from user prompt using gemini
+
+
+
+const sessions = {}; // Store session data in memory (for testing only, use a DB for production)
+
+const generateResponse = async (req, res) => {
+    const { prompt } = req.body;
+
+    // Generate a session ID using cookies (or any unique user identifier)
+    let sessionId = req.body.sessionId;
+    console.log("sessionId: ", sessionId);
+    const user = await User.findOne({ _id: req.user.id });
+
+    console.log("user: ", user);
+
+    // Initialize conversation history if not present
+    if (!sessions[sessionId]) {
+        sessions[sessionId] = [
+            { role: "system", content: "You are FitMentor, a fitness assistant bot. Collect weight, height, goal, and diet from users for personalized workout and meal plans. the user name is" + user.name + "credit are" + user.credit - 1 }
+        ];
+    }
+
+    // Add user input to the conversation history
+    sessions[sessionId].push({ role: "user", content: prompt });
+    console.log("sessions[sessionId]: ", sessions[sessionId]);
+    // Prepare the complete prompt for the AI model
+    const completePrompt = `
+    Conversation History: ${JSON.stringify(sessions[sessionId])}
+    -They also have credits. If remind them that if credit is 0 then u cant chat like that.
+    -They have ${user.credit - 1} now so handle it too.
+    -if credit exeeds so reply like ur credit exeeds to add credits u can add workout on this platform and use them so like wise reply!
+    - If the user provides all required metrics (weight, height, goal, diet), generate a personalized workout and meal plan.
+    - Avoid spelling mistakes and carefully extract the usefull information and the content is like string and all formate provided u like object and all.
+    -provide plain text ok without object response is plain text.
+    - If metrics are missing, clearly state which ones and prompt the user for them.
+    - Avoid discussing topics unrelated to fitness give appropriate reply to user.
+    - if all metrics recive then type generate plan like string to user to get final response.
+    -if user ask about greetings then its fine u can reply but dont forgoet about fitness. maintain context .
+    -provide plan in structured way!
+    -use previously generated response maintain context!
+
+    `;
+
+    try {
+        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        const result = await model.generateContent(completePrompt);
+        const responseText = await result.response.text();
+
+        // Add the AI's response to the conversation history
+        sessions[sessionId].push({ role: "assistant", content: responseText });
+        const user = await User.findById(req.user.id);
+        if (user.credit !== 0)
+            user.credit = user.credit - 1;
+        user.save();
+        res.json({
+            message: "✅ Response generated successfully!",
+            response: responseText,
+            sessionId: sessionId, // Include the session ID for future reference
+            credit: user.credit
+        });
+    } catch (error) {
+        console.error("Error generating response:", error);
+        res.status(500).json({ error: "Failed to generate the fitness plan." });
+    }
+};
+
+// Function to generate personalized fitness plan
+
+
+// Function to store user data (this should ideally be done through a session or a database)
+
+
+app.post("/generate", authMiddleware, generateResponse);
+
 // Middleware to handle auth (Dummy Example)
 app.get('/workouts/:date', authMiddleware, getWorkouts);
 
@@ -439,8 +590,9 @@ app.get("/dashboard", authMiddleware, getDashBoard);
 
 app.post('/addWorkout', authMiddleware, addWorkout);
 
+app.get('/verifyToken', authMiddleware, verifyToken);
 
-
+app.post('/upload-profile', authMiddleware, upload.single('profilePhoto'), uploadProfile);
 
 
 app.listen(5000, () => {

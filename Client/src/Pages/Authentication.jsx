@@ -7,6 +7,7 @@ const Authentication = ({ setIsUser, isUser }) => {
     const navigate = useNavigate();
     if (isUser) {
         navigate('/dashboard');
+        window.location.href = '/dashboard';
         return null; // Prevent rendering if user is already logged in. This will prevent unnecessary re-renders.  // This line of code will navigate to the dashboard page if the user is already logged in.  // The isUser prop will be passed from the parent component (App.jsx) and used to check if the user is logged in.  // If the user is logged in, the component will not render and the user will be redirected to the dashboard page.  // This prevents unnecessary re-renders of the component.  // The useNavigate hook is used to navigate to a different route.  // The navigate function takes a string as an argument, which represents the path to navigate to.  // In this case, it navigates to the dashboard page.  // The return statement prevents the component from rendering and returns null.  // This ensures that the component is not rendered if the user is already logged in.  // The isUser prop is
     }
     const [isLogin, setIsLogin] = useState(false)

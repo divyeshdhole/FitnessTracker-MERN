@@ -37,6 +37,12 @@ const AddWorkout = ({ setIsWorkoutAdded }) => {
             if (response.ok) {
                 const data = await response.json(); // Handle response JSON
                 setMessage(data.message);
+                //get local storage
+                const user = JSON.parse(localStorage.getItem('user'));
+                user.credit = data.credit;
+                localStorage.setItem('user', JSON.stringify(user));
+
+
             } else {
                 setMessage('Failed to add workout. Please try again.');
             }

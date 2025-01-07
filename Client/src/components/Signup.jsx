@@ -38,6 +38,7 @@ const Signup = ({ setIsUser }) => {
 
         // Store token in cookies (client-side)
         Cookies.set("token", data.token, { expires: 1 }); // expires in 1 day
+        localStorage.setItem('user', JSON.stringify(data.user));
 
         // Redirect to dashboard
         navigate('/dashboard');

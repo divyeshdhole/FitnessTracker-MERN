@@ -7,7 +7,10 @@ import { useState, useEffect } from 'react';
 import WorkoutCards from './WorkoutCards';
 import Cookies from 'js-cookie';
 import ShimmerLoader from './Shimmers';
+import { useOutletContext } from 'react-router-dom';
+
 const DashBoard = () => {
+    const { update, setUpdate } = useOutletContext();
     const [workout, setWorkout] = useState("");
     const [dashboardData, setDashboardData] = useState([]);
     const [error, setError] = useState(undefined);
@@ -42,6 +45,8 @@ const DashBoard = () => {
         fetchData();
     }, [isWorkoutAdded]);
     useEffect(() => {
+        setUpdate(!update);  // Trigger re-render to update dashboard data
+
         setTimeout(() => {
             setIsWorkoutAdded(false);
         }, 3000);

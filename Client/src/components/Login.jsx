@@ -6,6 +6,7 @@ const Login = ({ setIsUser }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
+  const [user, setUser] = useState({});
   const navigate = useNavigate();
 
   // Handle login logic
@@ -23,7 +24,7 @@ const Login = ({ setIsUser }) => {
       });
 
       const data = await response.json();
-
+      console.log(data.user);
       if (response.ok) {
         // Login successful
         setIsUser(true); // Set user as logged in
@@ -31,6 +32,7 @@ const Login = ({ setIsUser }) => {
         // Store token in cookies (client-side)
         Cookies.set('token', data.token, { expires: 1 }); // expires in 1 day
 
+        localStorage.setItem('user', JSON.stringify(data.user));
         // Redirect to the dashboard
         navigate('/dashboard');
       } else {

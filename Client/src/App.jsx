@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import Authentication from './Pages/Authentication.jsx';
 import Dashboard from './components/DashBoard.jsx';
-import Home from './Pages/Home.jsx';
+import Home from './Pages/Layout.jsx';
 import Workouts from './components/Workouts.jsx';
 import Tutorial from './components/Tutorial.jsx';
 import Cookies from 'js-cookie';  // Import js-cookie
@@ -12,16 +12,39 @@ function App() {
   const navigate = useNavigate();
 
   // Check if user is logged in on component mount
-  useEffect(() => {
+  const validateToken = async () => {
     console.log(isUser);
     const token = Cookies.get('token');  // Get token from cookies
-
+    console.log(token);
     if (token) {
-      setIsUser(true);  // Set user as logged in if token exists
+      const res = await fetch('http://localhost:5000/verifyToken', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+
+        }
+      }
+
+      )
+      const isValidToken = await res.json();
+      console.log('isValidToken', isValidToken);  // Log the validity of the token in the console for debugging purposes.
+      console.log(isValidToken)
+      if (isValidToken.success) {
+        setIsUser(true);
+      }  // Set user login status to true if token is valid
+      else {
+        Cookies.remove('token');
+        navigate('/authentication');
+
+      }
     } else {
       navigate('/authentication');  // Redirect to authentication if no token
     }
-  }, [navigate]);
+  }
+  useEffect(() => {
+    validateToken();
+  }, []);
   // if the location is / only the  redircet to dashboard
   if (window.location.pathname === '/') {
     navigate('/dashboard');
