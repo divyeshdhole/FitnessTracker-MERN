@@ -515,18 +515,21 @@ const generateResponse = async (req, res) => {
     const { prompt } = req.body;
 
     // Generate a session ID using cookies (or any unique user identifier)
-    let sessionId = req.body.sessionId;
-    console.log("sessionId: ", sessionId);
-    const user = await User.findOne({ _id: req.user.id });
 
-    console.log("user: ", user);
+    const user = await User.findOne({ _id: req.user.id });
+    const sessionId = user.name;
+    // console.log("user: ", user);
 
     // Initialize conversation history if not present
     if (!sessions[sessionId]) {
         sessions[sessionId] = [
-            { role: "system", content: "You are FitMentor, a fitness assistant bot. Collect weight, height, goal, and diet from users for personalized workout and meal plans. the user name is" + user.name + "credit are" + user.credit - 1 }
+            {
+                role: "system", content: "You are FitMentor, a fitness assistant bot. Collect weight, height, goal, and diet from users for personalized workout and meal plans. the user name is"
+                    + user.name + "! and credits are" + (user.credit - 1)
+            }
         ];
     }
+
 
     // Add user input to the conversation history
     sessions[sessionId].push({ role: "user", content: prompt });
@@ -534,21 +537,17 @@ const generateResponse = async (req, res) => {
     // Prepare the complete prompt for the AI model
     const completePrompt = `
     Conversation History: ${JSON.stringify(sessions[sessionId])}
-    -Reply with the user's name.
-    -Remind them about credits; if credit = 0, inform them they can't chat.
-    -Mention their remaining credits as ${user.credit - 1} and prompt to add workouts for more credits if exhausted.
-    -If weight, height, goal, and diet are provided, generate a personalized workout and meal plan.
-    -Use plain text with no objects, avoiding spelling mistakes.
-    -If metrics are missing, specify clearly and prompt for them.
-    -Stay focused on fitness topics only.
-    -If all metrics are received, respond with "Generate Plan."
-    -Greetings are fine, but maintain fitness context.
-    -Provide structured plans.
-    -
+    current Prompt : ${prompt}
+   -the natural conversation consider previous history provide plain text as response if user unrelated topic then politly say them to fitness topic use greetings also have credits to chat if exeeds no chat ${user.credit - 1} dont remind them repeatedly 
+   the conversation is like he chatting with real person and behave like real! 
+   -reply to greetings hi hello and all and how are u like fitness couch
+
+    -one chat one credit one add workout one credit
 
     `;
 
     try {
+        sessions[sessionId].push({ role: "user", content: prompt });
         const model = genAI.getGenerativeModel({ model: "gemini-pro" });
         const result = await model.generateContent(completePrompt);
         const responseText = await result.response.text();
