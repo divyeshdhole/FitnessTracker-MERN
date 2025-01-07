@@ -13,12 +13,7 @@ const PersonalAssistant = ({ update, setUpdate }) => {
     const chatEndRef = useRef(null);
     const draggableRef = useRef(null);
 
-    // Generate or retrieve session ID
-    useEffect(() => {
-        if (!localStorage.getItem("sessionId")) {
-            localStorage.setItem("sessionId", Date.now().toString());
-        }
-    }, []);
+
 
     // Auto-scroll to the latest message
     useEffect(() => {
@@ -46,7 +41,6 @@ const PersonalAssistant = ({ update, setUpdate }) => {
                     },
                     body: JSON.stringify({
                         prompt: input,
-                        sessionId: localStorage.getItem("sessionId")
                     })
                 });
                 const data = await response.json();
