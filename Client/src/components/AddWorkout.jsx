@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import Cookies from 'js-cookie';
-import CategoryChart from './CategoryChart';
+import { Alert, Snackbar, TextField, Typography, Box } from '@mui/material';
+import { Button } from '@mui/material';
 import url from '../constant';
+
 const AddWorkout = ({ setIsWorkoutAdded }) => {
     const [workoutData, setWorkoutData] = useState({
         category: '',
@@ -10,23 +12,32 @@ const AddWorkout = ({ setIsWorkoutAdded }) => {
         sets: '',
         reps: '',
         weight: '',
-    }); // State to hold individual workout inputs
-    const [message, setMessage] = useState(''); // State to hold feedback message
+    });
+    const [alertOpen, setAlertOpen] = useState(false);
+    const [alertMessage, setAlertMessage] = useState("");
+    const [alertType, setAlertType] = useState("success");
     const token = Cookies.get('token');
-    // Function to update state for each input field
+
+    // Update form fields
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setWorkoutData({
-            ...workoutData,
-            [name]: value,
-        });
+        setWorkoutData(prev => ({
+            ...prev,
+            [name]: value
+        }));
     };
 
+    // Close Snackbar
+    const handleCloseSnackbar = () => {
+        setAlertOpen(false);
+    };
+
+    // Submit the form
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setAlertOpen(false);
         try {
-
-            const response = await fetch(url + '/addWorkout', {
+            const response = await fetch(`${url}/addWorkout`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -35,109 +46,86 @@ const AddWorkout = ({ setIsWorkoutAdded }) => {
                 body: JSON.stringify(workoutData),
             });
 
+            const data = await response.json();
+
             if (response.ok) {
-                const data = await response.json(); // Handle response JSON
-                setMessage(data.message);
-                //get local storage
                 const user = JSON.parse(localStorage.getItem('user'));
                 user.credit = data.credit;
                 localStorage.setItem('user', JSON.stringify(user));
 
-
+                // Success message and UI update
+                setAlertMessage(data.message || "Workout added successfully!");
+                setAlertType("success");
+                setIsWorkoutAdded(true);
             } else {
-                setMessage('Failed to add workout. Please try again.');
+                setAlertMessage(data.message || "Failed to add workout.");
+                setAlertType("error");
             }
         } catch (error) {
+            setAlertMessage("An error occurred while adding the workout.");
+            setAlertType("error");
             console.error('Error:', error);
-            setMessage('Failed to add workout. Please try again.');
+        } finally {
+            setAlertOpen(true); // Open Snackbar after any result
         }
     };
 
-
     return (
+        <Box
+            sx={{
+                boxShadow: 3,
+                padding: 4,
+                borderRadius: 2,
+                maxWidth: 430,
+                bgcolor: '#fff'
+            }}
+        >
+            <Typography variant="h5" fontWeight="bold" color="primary" mb={2}>
+                Add a New Workout
+            </Typography>
 
-        <div className="min-w-[350px] shadow-lg h-auto lg:w-[430px] p-4 rounded-lg w-full border border-gray">
-            <h2 className="text-blue-500">Add a New Workout</h2>
             <form onSubmit={handleSubmit}>
-                <div className="mt-4">
-                    <label className="block text-gray-600">category</label>
-                    <input
-                        type="text"
-                        name="category"
-                        value={workoutData.category}
+                {/* MUI Inputs */}
+                {Object.keys(workoutData).map((key) => (
+                    <TextField
+                        key={key}
+                        fullWidth
+                        margin="normal"
+                        label={key.charAt(0).toUpperCase() + key.slice(1)}
+                        name={key}
+                        value={workoutData[key]}
                         onChange={handleChange}
-                        className="mt-2 p-2 w-full rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-300 transition duration-200"
-                        placeholder="e.g., legs"
+                        required
                     />
-                </div>
-                <div className="mt-4">
-                    <label className="block text-gray-600">Name</label>
-                    <input
-                        type="text"
-                        name="name"
-                        value={workoutData.name}
-                        onChange={handleChange}
-                        className="mt-2 p-2 w-full rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-300 transition duration-200"
-                        placeholder="e.g., Push-ups"
-                    />
-                </div>
+                ))}
 
-                <div className="mt-4">
-                    <label className="block text-gray-600">Duration</label>
-                    <input
-                        type="text"
-                        name="duration"
-                        value={workoutData.duration}
-                        onChange={handleChange}
-                        className="mt-2 p-2 w-full rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-300 transition duration-200"
-                        placeholder="e.g., 30 minutes"
-                    />
-                </div>
-
-                <div className="mt-4">
-                    <label className="block text-gray-600">Sets</label>
-                    <input
-                        type="number"
-                        name="sets"
-                        value={workoutData.sets}
-                        onChange={handleChange}
-                        className="mt-2 p-2 w-full rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-300 transition duration-200"
-                        placeholder="e.g., 3"
-                    />
-                </div>
-
-                <div className="mt-4">
-                    <label className="block text-gray-600">Reps</label>
-                    <input
-                        type="number"
-                        name="reps"
-                        value={workoutData.reps}
-                        onChange={handleChange}
-                        className="mt-2 p-2 w-full rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-300 transition duration-200"
-                        placeholder="e.g., 10"
-                    />
-                </div>
-
-                <div className="mt-4">
-                    <label className="block text-gray-600">Weight</label>
-                    <input
-                        type="number"
-                        name="weight"
-                        value={workoutData.weight}
-                        onChange={handleChange}
-                        className="mt-2 p-2 w-full rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-300 transition duration-200"
-                        placeholder="e.g., 100kg"
-                    />
-                </div>
-
-                <button className="mt-4 bg-blue-500 text-white p-2 w-full rounded-lg" type="submit" onClick={() => {
-                    setIsWorkoutAdded(true);
-                }}>
+                {/* Submit Button */}
+                <Button
+                    fullWidth
+                    variant="contained"
+                    sx={{ mt: 2 }}
+                    type="submit"
+                >
                     Add Workout
-                </button>
+                </Button>
             </form>
-            {message && <p className="mt-2 text-sm text-gray-600">{message}</p>} {/* Display feedback message */}
-        </div>
+
+            {/* Snackbar for Feedback Messages */}
+            <Snackbar
+                open={alertOpen}
+                autoHideDuration={4000}
+                onClose={handleCloseSnackbar}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert
+                    onClose={handleCloseSnackbar}
+                    severity={alertType}
+                    sx={{ width: '100%' }}
+                >
+                    {alertMessage}
+                </Alert>
+            </Snackbar>
+        </Box>
     );
 };
 

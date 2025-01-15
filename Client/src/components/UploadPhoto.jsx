@@ -3,11 +3,13 @@ import { FaCamera } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 import Cookies from "js-cookie";
 import url from '../constant';
-
+import { Alert, Snackbar } from "@mui/material";
 const UploadPhoto = ({ handleProfileClick }) => {
     const [profilePhoto, setProfilePhoto] = useState(null);
     const [selectedFile, setSelectedFile] = useState(null); // Store the actual file
-
+    const [alertOpen, setAlertOpen] = useState(false);  // For Snackbar visibility
+    const [alertMessage, setAlertMessage] = useState(""); // For custom alert message
+    const [alertType, setAlertType] = useState("success");
     const handleFileChange = (event) => {
         const file = event.target.files[0];
         if (file) {
@@ -15,10 +17,14 @@ const UploadPhoto = ({ handleProfileClick }) => {
             setProfilePhoto(URL.createObjectURL(file)); // Preview the image
         }
     };
-
+    const handleCloseSnackbar = () => {
+        setAlertOpen(false);
+    };
     const handleUpload = async () => {
         if (!selectedFile) {
-            alert('Please select a photo first.');
+            setAlertMessage("Pleas Select a photo!");
+            setAlertType("error");
+            setAlertOpen(true);
             return;
         }
 
@@ -47,11 +53,14 @@ const UploadPhoto = ({ handleProfileClick }) => {
                 localStorage.setItem('user', JSON.stringify(user));
 
                 console.log('Profile photo updated successfully.');
+                setAlertMessage("Photo uploaded successfully!");
+                setAlertType("success");
+                setAlertOpen(true);
                 handleProfileClick(); // Close the modal and update the profile photo in the navigation bar
             } else {
                 console.log('No update needed, profile photo is already set.');
             }
-            alert('Photo uploaded successfully!');
+
             console.log('Server Response:', result);
         } catch (error) {
             console.error('Error uploading file:', error);
@@ -104,6 +113,20 @@ const UploadPhoto = ({ handleProfileClick }) => {
                     Cancel
                 </button>
             </div>
+            <Snackbar className="z-[100]"
+                open={alertOpen}
+                autoHideDuration={4000}
+                onClose={handleCloseSnackbar}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }} // Alert positioned at the top center
+            >
+                <Alert
+                    onClose={handleCloseSnackbar}
+                    severity={alertType}
+                    sx={{ width: '100%' }}
+                >
+                    {alertMessage}
+                </Alert>
+            </Snackbar>
         </div>
     );
 };

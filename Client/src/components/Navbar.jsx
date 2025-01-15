@@ -8,7 +8,7 @@ import Cookies from 'js-cookie';
 import UploadPhoto from "./UploadPhoto";
 import ShowPhoto from "./ShowPhoto";
 import { FaCoins } from "react-icons/fa6";
-
+import url_api from "../constant";
 const Navbar = ({ setOpen, setIsUser, update }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [activeTab, setActiveTab] = useState("dashboard"); // State to manage active tab
@@ -142,7 +142,7 @@ const Navbar = ({ setOpen, setIsUser, update }) => {
                     {credit}
                 </div>
                 {
-                    profilePhoto !== null ? (<div onClick={showProfilePhoto} className="flex rounded-full size-8 bg-gray-500 shadow-2xl justify-center items-center cursor-pointer"><img className="rounded-full size-8 shadow-xl border border-gray-400" src={"http://localhost:5000" + profilePhoto}></img></div>) : <FaUserCircle onClick={handleProfileClick} className="text-3xl text-gray-600 cursor-pointer" />
+                    profilePhoto !== null ? (<div onClick={showProfilePhoto} className="flex rounded-full size-8 bg-gray-500 shadow-2xl justify-center items-center cursor-pointer"><img className="rounded-full size-8 shadow-xl border border-gray-400" src={url_api + profilePhoto}></img></div>) : <FaUserCircle onClick={handleProfileClick} className="text-3xl text-gray-600 cursor-pointer" />
                 }
 
 

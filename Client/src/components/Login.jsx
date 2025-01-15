@@ -2,18 +2,24 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import url from '../constant';
+import Button from '@mui/material/Button';
+import { Alert, Snackbar } from '@mui/material';
 
 const Login = ({ setIsUser }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState(null);
   const [user, setUser] = useState({});
+  const [alertOpen, setAlertOpen] = useState(false);  // For Snackbar visibility
+  const [alertMessage, setAlertMessage] = useState(""); // For custom alert message
+  const [alertType, setAlertType] = useState("success"); // For alert severity
   const navigate = useNavigate();
-
+  const handleCloseSnackbar = () => {
+    setAlertOpen(false);
+  };
   // Handle login logic
+
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError(null); // Clear any previous errors
 
     try {
       const response = await fetch(url + '/login', {
@@ -34,14 +40,21 @@ const Login = ({ setIsUser }) => {
         Cookies.set('token', data.token, { expires: 1 }); // expires in 1 day
 
         localStorage.setItem('user', JSON.stringify(data.user));
+        setAlertMessage(data.message || "Registration failed");
+        setAlertType("success");
+        setAlertOpen(true);
         // Redirect to the dashboard
         navigate('/dashboard');
       } else {
+        setAlertMessage(data.message || "Registration failed");
+        setAlertType("error");
+        setAlertOpen(true);
         // Display error if login fails
-        setError(data.message || 'Invalid login credentials');
       }
     } catch (error) {
-      setError('An error occurred. Please try again.');
+      setAlertMessage("An error occurred. Please try again.");
+      setAlertType("error");
+      setAlertOpen(true);
     }
   };
 
@@ -53,7 +66,6 @@ const Login = ({ setIsUser }) => {
         <p className="text-gray-400 text-sm">Enter Details to Login</p>
 
         {/* Display error message if login fails */}
-        {error && <p className="text-red-500 text-sm">{error}</p>}
 
         {/* Email input */}
         <input
@@ -74,13 +86,27 @@ const Login = ({ setIsUser }) => {
         />
 
         {/* Login button */}
-        <button
+        <Button variant="contained"
           className="bg-blue-500 text-white p-2 w-full mt-2 cursor-pointer rounded-lg"
           onClick={handleLogin}
         >
           Login
-        </button>
+        </Button>
       </div>
+      <Snackbar
+        open={alertOpen}
+        autoHideDuration={4000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }} // Alert positioned at the top center
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={alertType}
+          sx={{ width: '100%' }}
+        >
+          {alertMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };
