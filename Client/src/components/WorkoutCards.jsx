@@ -5,7 +5,7 @@ import { GiDuration } from "react-icons/gi";
 
 const WorkoutCards = ({ workout }) => {
     return (
-        <div className='p-2 w-full lg:w-[400px] border border-gray-300 rounded-lg shadow-lg h-auto mt-3'>
+        <div className='p-2 w-full lg:w-[400px] border border-gray-300 rounded-lg shadow-lg h-auto mt-3 transform transition-transform duration-300 hover:scale-105  hover:shadow-xl hover:border hover:border-blue-200 hover:border-2'>
             <span className='font-semibold text-blue-500 p-2 bg-blue-500 bg-opacity-25 rounded-lg text-xs'>#{workout.category}</span>
             <h4 className='font-semibold text-gray-800 text-xl'>{workout.workoutName}</h4>
             <div className='flex gap-2 items-center w-full'>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Cookies from 'js-cookie';
 import { Alert, Snackbar, TextField, Typography, Box } from '@mui/material';
-import { Button } from '@mui/material';
+import { Button, CircularProgress } from '@mui/material';
 import url from '../constant';
 
 const AddWorkout = ({ setIsWorkoutAdded }) => {
@@ -17,9 +17,10 @@ const AddWorkout = ({ setIsWorkoutAdded }) => {
     const [alertMessage, setAlertMessage] = useState("");
     const [alertType, setAlertType] = useState("success");
     const token = Cookies.get('token');
-
+    const [loader, setLoader] = useState(false);
     // Update form fields
     const handleChange = (e) => {
+
         const { name, value } = e.target;
         setWorkoutData(prev => ({
             ...prev,
@@ -34,6 +35,7 @@ const AddWorkout = ({ setIsWorkoutAdded }) => {
 
     // Submit the form
     const handleSubmit = async (e) => {
+        setLoader(true);
         e.preventDefault();
         setAlertOpen(false);
         try {
@@ -45,12 +47,20 @@ const AddWorkout = ({ setIsWorkoutAdded }) => {
                 },
                 body: JSON.stringify(workoutData),
             });
-
+            setLoader(false);
             const data = await response.json();
-
+            setWorkoutData({
+                category: '',
+                name: '',
+                duration: '',
+                sets: '',
+                reps: '',
+                weight: '',
+            });
             if (response.ok) {
                 const user = JSON.parse(localStorage.getItem('user'));
                 user.credit = data.credit;
+
                 localStorage.setItem('user', JSON.stringify(user));
 
                 // Success message and UI update
@@ -71,18 +81,13 @@ const AddWorkout = ({ setIsWorkoutAdded }) => {
     };
 
     return (
-        <Box
-            sx={{
-                boxShadow: 3,
-                padding: 4,
-                borderRadius: 2,
-                maxWidth: 430,
-                bgcolor: '#fff'
-            }}
-        >
-            <Typography variant="h5" fontWeight="bold" color="primary" mb={2}>
-                Add a New Workout
-            </Typography>
+        <div className="min-w-[330px] shadow-lg h-auto p-4 rounded-lg lg:w-[430px] w-full border border-gray flex flex-col items-center">
+            <div className='w-full flex justify-start'>
+                <h3 className='text-blue-500 '>Weekly Calories burned</h3>
+
+            </div>
+            {/* <h3 className='text-blue-500 '>Weekly Calories burned</h3> */}
+
 
             <form onSubmit={handleSubmit}>
                 {/* MUI Inputs */}
@@ -105,8 +110,8 @@ const AddWorkout = ({ setIsWorkoutAdded }) => {
                     variant="contained"
                     sx={{ mt: 2 }}
                     type="submit"
-                >
-                    Add Workout
+                >{loader ? <CircularProgress size={24} /> : "Add Workout"}
+
                 </Button>
             </form>
 
@@ -125,7 +130,8 @@ const AddWorkout = ({ setIsWorkoutAdded }) => {
                     {alertMessage}
                 </Alert>
             </Snackbar>
-        </Box>
+        </div>
+
     );
 };
 

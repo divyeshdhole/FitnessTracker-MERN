@@ -9,7 +9,7 @@ const Card = ({ item, dashboardData }) => {
         IoIosTrendingUp: IoIosTrendingUp
     };
     const Icon = iconMap[item.icon];
-    return <div className="p-2 min-w-[300px]  lg:w-[430px] border border-gray-300 rounded-lg shadow-lg h-[100px]">
+    return <div className="p-2 min-w-[300px]  lg:w-[430px] border border-gray-300 rounded-lg shadow-lg h-[100px] transform transition-transform duration-300 hover:scale-105 hover:shadow-xl hover:border hover:border-blue-200 hover:border-2">
         <div className="flex justify-between items-center">
             <h4 className="text-blue-500 ">{item.title}</h4>
             <div className={`${item.bg} bg-opacity-20 rounded-lg p-2`}>

@@ -1,5 +1,5 @@
 import logo from "../assets/images/logo.png";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { IoMdMenu } from "react-icons/io";
 import { FaUserCircle } from "react-icons/fa";
 import { useState, useEffect } from "react";
@@ -9,9 +9,15 @@ import UploadPhoto from "./UploadPhoto";
 import ShowPhoto from "./ShowPhoto";
 import { FaCoins } from "react-icons/fa6";
 import url_api from "../constant";
+import { GiTwoCoins } from "react-icons/gi";
+import { Tooltip, IconButton } from "@mui/material";
+
 const Navbar = ({ setOpen, setIsUser, update }) => {
+    const location = useLocation();
+    const aTab = location.pathname.split('/')[1];
+    console.log("the location is :", aTab == "");
     const [isOpen, setIsOpen] = useState(false);
-    const [activeTab, setActiveTab] = useState("dashboard"); // State to manage active tab
+    const [activeTab, setActiveTab] = useState(aTab); // State to manage active tab
     const [profileClick, setProfileClick] = useState(false);
     const [profilePhoto, setProfilePhoto] = useState(null);
     const [showPhoto, setShowPhoto] = useState(false);
@@ -72,10 +78,11 @@ const Navbar = ({ setOpen, setIsUser, update }) => {
             <div className="gap-4 hidden lg:flex">
                 <Link
                     to="/dashboard"
-                    className={`${activeTab === "dashboard"
+                    className={`${activeTab === "dashboard" || activeTab === ""
                         ? "text-blue-500 border-b-2 border-blue-500"
                         : "text-gray-800"
-                        }`}
+                        }  hover:text-blue-500 
+        transition-all duration-300 ease-in-out hover:font-semibold px-2 py-1 hover:text-xl`}
                     onClick={() => handleTabClick("dashboard")}
                 >
                     DashBoard
@@ -85,7 +92,8 @@ const Navbar = ({ setOpen, setIsUser, update }) => {
                     className={`${activeTab === "workouts"
                         ? "text-blue-500 border-b-2 border-blue-500"
                         : "text-gray-800"
-                        }`}
+                        }  hover:text-blue-500 
+        transition-all duration-300 ease-in-out hover:font-semibold px-2 py-1 hover:text-xl`}
                     onClick={() => handleTabClick("workouts")}
                 >
                     Workouts
@@ -95,7 +103,8 @@ const Navbar = ({ setOpen, setIsUser, update }) => {
                     className={`${activeTab === "tutorial"
                         ? "text-blue-500 border-b-2 border-blue-500"
                         : "text-gray-800"
-                        }`}
+                        }  hover:text-blue-500 
+        transition-all duration-300 ease-in-out hover:font-semibold px-2 py-1 hover:text-xl`}
                     onClick={() => handleTabClick("tutorial")}
                 >
                     Tutorial
@@ -138,7 +147,14 @@ const Navbar = ({ setOpen, setIsUser, update }) => {
 
             <div className="flex gap-2 items-center">
                 <div className="flex justify-center items-center gap-2 mr-10">
-                    <FaCoins className="text-3xl text-gray-600" />
+                    <Tooltip title="💰 Coin Value: Represents your available credits. Earn more by adding workouts!" arrow>
+                        <IconButton>
+                            <GiTwoCoins className="text-3xl text-yellow-600 cursor-pointer" />
+
+                        </IconButton>
+
+                    </Tooltip>
+
                     {credit}
                 </div>
                 {

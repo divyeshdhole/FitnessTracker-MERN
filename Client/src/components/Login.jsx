@@ -4,7 +4,7 @@ import Cookies from 'js-cookie';
 import url from '../constant';
 import Button from '@mui/material/Button';
 import { Alert, Snackbar } from '@mui/material';
-
+import { CircularProgress } from '@mui/material';
 const Login = ({ setIsUser }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -12,6 +12,7 @@ const Login = ({ setIsUser }) => {
   const [alertOpen, setAlertOpen] = useState(false);  // For Snackbar visibility
   const [alertMessage, setAlertMessage] = useState(""); // For custom alert message
   const [alertType, setAlertType] = useState("success"); // For alert severity
+  const [loader, setLoader] = useState(false);
   const navigate = useNavigate();
   const handleCloseSnackbar = () => {
     setAlertOpen(false);
@@ -19,6 +20,7 @@ const Login = ({ setIsUser }) => {
   // Handle login logic
 
   const handleLogin = async (e) => {
+    setLoader(true);
     e.preventDefault();
 
     try {
@@ -29,9 +31,10 @@ const Login = ({ setIsUser }) => {
         },
         body: JSON.stringify({ username: email, password }),
       });
-
+      setLoader(false);
       const data = await response.json();
       console.log(data.user);
+
       if (response.ok) {
         // Login successful
         setIsUser(true); // Set user as logged in
@@ -90,7 +93,7 @@ const Login = ({ setIsUser }) => {
           className="bg-blue-500 text-white p-2 w-full mt-2 cursor-pointer rounded-lg"
           onClick={handleLogin}
         >
-          Login
+          {loader ? <CircularProgress size={24} /> : "Login"}
         </Button>
       </div>
       <Snackbar

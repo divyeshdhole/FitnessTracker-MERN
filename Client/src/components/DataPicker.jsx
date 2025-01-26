@@ -43,7 +43,7 @@ const DatePicker = ({ setDate }) => {
     };
 
     return (
-        <div className="max-w-[500px] lg:w-[40%] p-4 border rounded-lg shadow-lg bg-white">
+        <div className="max-w-[500px] lg:w-[40%] p-4 border rounded-lg shadow-lg bg-white h-[500px]">
             <h2 className="text-lg font-semibold mb-4">Select Date</h2>
             <h3 className="text-xl font-bold mb-2">{`${new Date(year, currentMonth).toLocaleString('default', { month: 'long' })} ${year}`}</h3>
             <div className="flex justify-between mb-4">

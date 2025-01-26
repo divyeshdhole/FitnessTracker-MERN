@@ -5,6 +5,7 @@ import Cookies from 'js-cookie';
 import url from '../constant';
 import Button from '@mui/material/Button';
 import { Alert, Snackbar } from "@mui/material";
+import { CircularProgress } from "@mui/material";
 const Signup = ({ setIsUser }) => {
   const [name, setName] = useState(""); // New state for name
   const [email, setEmail] = useState("");
@@ -14,7 +15,7 @@ const Signup = ({ setIsUser }) => {
   const [alertOpen, setAlertOpen] = useState(false);  // For Snackbar visibility
   const [alertMessage, setAlertMessage] = useState(""); // For custom alert message
   const [alertType, setAlertType] = useState("success"); // For alert severity
-
+  const [loader, setLoader] = useState(false); // For
   const navigate = useNavigate();
 
   // Toggle password visibility
@@ -26,6 +27,7 @@ const Signup = ({ setIsUser }) => {
   };
   // Handle signup logic
   const handleSignup = async (e) => {
+    setLoader(true);
     e.preventDefault();
     setError(null);
 
@@ -39,7 +41,7 @@ const Signup = ({ setIsUser }) => {
       });
 
       const data = await response.json();
-
+      setLoader(false);
       if (response.ok) {
         // Set user state to true after successful registration
         setIsUser(true);
@@ -108,7 +110,7 @@ const Signup = ({ setIsUser }) => {
           className="bg-blue-500 text-white p-2 w-full mt-2 cursor-pointer rounded-lg"
           onClick={handleSignup}
         >
-          Sign Up
+          {loader ? <CircularProgress size={24} /> : "SignUp"}
         </Button>
       </div>
       <Snackbar
