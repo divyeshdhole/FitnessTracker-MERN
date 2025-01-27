@@ -575,6 +575,7 @@ const getDates = async (req, res) => {
     try {
         const userId = req.user.id; // Assuming you have `req.user` from auth middleware
         const user = await User.findOne({ _id: userId });
+        console.log(user);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }

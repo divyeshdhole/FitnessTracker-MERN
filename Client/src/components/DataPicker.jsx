@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import url_api from "../constant";
 import Cookies from 'js-cookie'
+import axios from "axios";
 const DatePicker = ({ setDate }) => {
     const [selectedDate, setSelectedDate] = useState(null);
     const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
@@ -54,15 +55,21 @@ const DatePicker = ({ setDate }) => {
     useEffect(() => {
         //Fetch the of all workouts done by the user
         const fetchData = async () => {
-            const res = fetch(`${url_api}/getDates`, {
-                method: 'get',
+            // const res = await fetch(`${url_api}/getDates`, {
+            //     method: 'get',
+            //     headers: {
+            //         'Authorization': `Bearer ${Cookies.get('token')}`,
+            //         'Content-Type': 'application/json'
+            //     }
+            // });
+            const res = await axios.get(`${url_api}/getDates`, {
                 headers: {
-                    'Authorization': `Bearer ${Cookies.get('token')}`,
-                    'Content-Type': 'application/json'
+                    Authorization: `Bearer ${Cookies.get('token')}`
                 }
             })
-            const workoutDates = await res.json();
-            console.log(workoutDates);
+
+            const workoutDates = await res.data;
+            console.log("the dates are:", workoutDates);
 
             setDates(workoutDates);
         }
