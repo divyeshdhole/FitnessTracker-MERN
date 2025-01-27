@@ -1,10 +1,11 @@
-import React, { useState } from "react";
-
+import React, { useEffect, useState } from "react";
+import url_api from "../constant";
+import Cookies from 'js-cookie'
 const DatePicker = ({ setDate }) => {
     const [selectedDate, setSelectedDate] = useState(null);
     const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
     const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
-
+    const [dates, setDates] = useState([]);
     const today = new Date();
     const currentYearValue = today.getFullYear();
     const currentMonthValue = today.getMonth();
@@ -50,7 +51,25 @@ const DatePicker = ({ setDate }) => {
     for (let i = 1; i <= daysInMonth; i++) {
         days.push(i);
     }
+    useEffect(() => {
+        //Fetch the of all workouts done by the user
+        const fetchData = async () => {
+            const res = fetch(`${url_api}/getDates`, {
+                method: 'get',
+                headers: {
+                    'Authorization': `Bearer ${Cookies.get('token')}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+            const workoutDates = await res.json();
+            console.log(workoutDates);
 
+            setDates(workoutDates);
+        }
+        fetchData();
+
+
+    }, [])
     return (
         <div className="max-w-[500px] lg:w-[40%] p-4 border rounded-lg shadow-lg bg-white">
             <h2 className="text-lg font-semibold mb-4">Select Date</h2>
@@ -109,12 +128,12 @@ const DatePicker = ({ setDate }) => {
                         <div
                             key={index}
                             className={`cursor-pointer text-center p-2 rounded-lg transition duration-200 ${day === selectedDate
-                                    ? "bg-blue-500 text-white"
-                                    : day
-                                        ? isDisabled
-                                            ? "text-gray-400 cursor-not-allowed"
-                                            : "hover:bg-gray-200"
-                                        : ""
+                                ? "bg-blue-500 text-white"
+                                : day
+                                    ? isDisabled
+                                        ? "text-gray-400 cursor-not-allowed"
+                                        : "hover:bg-gray-200"
+                                    : ""
                                 }`}
                             onClick={() => !isDisabled && day && handleDateClick(day)}
                         >

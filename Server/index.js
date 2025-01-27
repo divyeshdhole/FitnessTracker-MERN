@@ -574,7 +574,7 @@ const generateResponse = async (req, res) => {
 const getDates = async (req, res) => {
     try {
         const userId = req.user.id; // Assuming you have `req.user` from auth middleware
-        const user = await User.findById(userId);
+        const user = await User.findOne({ _id: userId });
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
@@ -606,7 +606,7 @@ app.get('/verifyToken', authMiddleware, verifyToken);
 
 app.post('/upload-profile', authMiddleware, upload.single('profilePhoto'), uploadProfile);
 
-app.post('/getDates', authMiddleware, getDates);
+app.get('/getDates', authMiddleware, getDates);
 
 app.listen(5000, () => {
     console.log('Server is running on port 5000');
