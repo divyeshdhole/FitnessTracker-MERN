@@ -110,7 +110,7 @@ const Signup = ({ setIsUser }) => {
           className="bg-blue-500 text-white p-2 w-full mt-2 cursor-pointer rounded-lg"
           onClick={handleSignup}
         >
-          {loader ? <CircularProgress size={24} /> : "SignUp"}
+          {loader ? <CircularProgress size={24} className="text-white" /> : "SignUp"}
         </Button>
       </div>
       <Snackbar

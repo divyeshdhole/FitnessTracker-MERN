@@ -570,6 +570,22 @@ const generateResponse = async (req, res) => {
     }
 };
 
+//Function to get dates for particular user and return in json formate
+const getDates = async (req, res) => {
+    try {
+        const userId = req.user.id; // Assuming you have `req.user` from auth middleware
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        const dates = user.workouts.map(workout => workout.date);
+        res.status(200).json(dates);
+    }
+    catch (error) {
+        console.error('Error fetching dates:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+}
 // Function to generate personalized fitness plan
 
 
@@ -590,6 +606,7 @@ app.get('/verifyToken', authMiddleware, verifyToken);
 
 app.post('/upload-profile', authMiddleware, upload.single('profilePhoto'), uploadProfile);
 
+app.post('/getDates', authMiddleware, getDates);
 
 app.listen(5000, () => {
     console.log('Server is running on port 5000');
