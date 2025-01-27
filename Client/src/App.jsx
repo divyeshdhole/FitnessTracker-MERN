@@ -53,13 +53,13 @@ function App() {
     <div className='text-black w-full h-full'>
       <Routes>
         {/* Protected Routes */}
-        {isUser && (
-          <Route path="/" element={<Home setIsUser={setIsUser} />}>
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="workouts" element={<Workouts />} />
-            <Route path="tutorial" element={<Tutorial />} />
-          </Route>
-        )}
+
+        <Route path="/" element={<Home setIsUser={setIsUser} isUser={isUser} />}>
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="workouts" element={<Workouts />} />
+          <Route path="tutorial" element={<Tutorial />} />
+        </Route>
+
 
         {/* Public Routes */}
         <Route path="/authentication" element={<Authentication setIsUser={setIsUser} isUser={isUser} />} />

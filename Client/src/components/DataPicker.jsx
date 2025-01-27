@@ -1,30 +1,21 @@
 import React, { useEffect, useState } from "react";
 import url_api from "../constant";
-import Cookies from 'js-cookie'
+import Cookies from 'js-cookie';
 import axios from "axios";
+
 const DatePicker = ({ setDate }) => {
     const [selectedDate, setSelectedDate] = useState(null);
     const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
     const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
-    const [dates, setDates] = useState([]);
+    const [dates, setDates] = useState([]); // Workout dates
     const today = new Date();
     const currentYearValue = today.getFullYear();
     const currentMonthValue = today.getMonth();
     const currentDayValue = today.getDate();
 
     const monthNames = [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December",
     ];
 
     const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
@@ -52,31 +43,24 @@ const DatePicker = ({ setDate }) => {
     for (let i = 1; i <= daysInMonth; i++) {
         days.push(i);
     }
+
     useEffect(() => {
-        //Fetch the of all workouts done by the user
         const fetchData = async () => {
-            // const res = await fetch(`${url_api}/getDates`, {
-            //     method: 'get',
-            //     headers: {
-            //         'Authorization': `Bearer ${Cookies.get('token')}`,
-            //         'Content-Type': 'application/json'
-            //     }
-            // });
             const res = await axios.get(`${url_api}/getDates`, {
                 headers: {
                     Authorization: `Bearer ${Cookies.get('token')}`
                 }
-            })
-
+            });
             const workoutDates = await res.data;
-            console.log("the dates are:", workoutDates);
-
-            setDates(workoutDates);
-        }
+            // Format dates for easier comparison
+            const formattedDates = workoutDates.map(
+                (date) => new Date(date).toISOString().split('T')[0]
+            );
+            setDates(formattedDates);
+        };
         fetchData();
+    }, []);
 
-
-    }, [])
     return (
         <div className="max-w-[500px] lg:w-[40%] p-4 border rounded-lg shadow-lg bg-white">
             <h2 className="text-lg font-semibold mb-4">Select Date</h2>
@@ -126,6 +110,14 @@ const DatePicker = ({ setDate }) => {
             </div>
             <div className="grid grid-cols-7 gap-2">
                 {days.map((day, index) => {
+                    const formattedDate = day
+                        ? `${currentYear}-${String(currentMonth + 1).padStart(
+                            2,
+                            "0"
+                        )}-${String(day).padStart(2, "0")}`
+                        : null;
+                    const isWorkoutDate = dates.includes(formattedDate);
+
                     const isDisabled =
                         currentYear === currentYearValue &&
                         currentMonth === currentMonthValue &&
@@ -139,7 +131,9 @@ const DatePicker = ({ setDate }) => {
                                 : day
                                     ? isDisabled
                                         ? "text-gray-400 cursor-not-allowed"
-                                        : "hover:bg-gray-200"
+                                        : isWorkoutDate
+                                            ? "bg-green-200"
+                                            : "hover:bg-gray-200"
                                     : ""
                                 }`}
                             onClick={() => !isDisabled && day && handleDateClick(day)}

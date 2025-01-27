@@ -110,40 +110,39 @@ const Navbar = ({ setOpen, setIsUser, update }) => {
                     Tutorial
                 </Link>
             </div>
-            {isOpen && (
-                <div className="lg:hidden flex flex-col bg-white shadow-lg absolute top-[70px] left-0 w-full z-10 p-4 rounded-lg">
-                    <Link
-                        to="/dashboard"
-                        className={`${activeTab === "dashboard"
-                            ? "text-blue-500 font-semibold border-b-2 border-blue-500 py-2 hover:bg-blue-100 transition-colors duration-300"
-                            : "text-gray-800 font-semibold py-2 hover:bg-blue-100 transition-colors duration-300"
-                            }`}
-                        onClick={() => handleTabClick("dashboard")}
-                    >
-                        DashBoard
-                    </Link>
-                    <Link
-                        to="/workouts"
-                        className={`${activeTab === "workouts"
-                            ? "text-blue-500 font-semibold border-b-2 border-blue-500 py-2 hover:bg-blue-100 transition-colors duration-300"
-                            : "text-gray-800 font-semibold py-2 hover:bg-blue-100 transition-colors duration-300"
-                            }`}
-                        onClick={() => handleTabClick("workouts")}
-                    >
-                        Workouts
-                    </Link>
-                    <Link
-                        to="/tutorial"
-                        className={`${activeTab === "tutorial"
-                            ? "text-blue-500 font-semibold border-b-2 border-blue-500 py-2 hover:bg-blue-100 transition-colors duration-300"
-                            : "text-gray-800 font-semibold py-2 hover:bg-blue-100 transition-colors duration-300"
-                            }`}
-                        onClick={() => handleTabClick("tutorial")}
-                    >
-                        Tutorial
-                    </Link>
-                </div>
-            )}
+
+            <div className={`lg:hidden flex flex-col bg-white shadow-lg absolute top-[70px] left-0 w-full z-10 p-4 rounded-lg transition-all ${isOpen ? "opacity-100" : "opacity-0 translate-y-0"}`}>
+                <Link
+                    to="/dashboard"
+                    className={`${activeTab === "dashboard"
+                        ? "text-blue-500 font-semibold border-b-2 border-blue-500 py-2 hover:bg-blue-100 transition-colors duration-300"
+                        : "text-gray-800 font-semibold py-2 hover:bg-blue-100 transition-colors duration-300"
+                        }`}
+                    onClick={() => handleTabClick("dashboard")}
+                >
+                    DashBoard
+                </Link>
+                <Link
+                    to="/workouts"
+                    className={`${activeTab === "workouts"
+                        ? "text-blue-500 font-semibold border-b-2 border-blue-500 py-2 hover:bg-blue-100 transition-colors duration-300"
+                        : "text-gray-800 font-semibold py-2 hover:bg-blue-100 transition-colors duration-300"
+                        }`}
+                    onClick={() => handleTabClick("workouts")}
+                >
+                    Workouts
+                </Link>
+                <Link
+                    to="/tutorial"
+                    className={`${activeTab === "tutorial"
+                        ? "text-blue-500 font-semibold border-b-2 border-blue-500 py-2 hover:bg-blue-100 transition-colors duration-300"
+                        : "text-gray-800 font-semibold py-2 hover:bg-blue-100 transition-colors duration-300"
+                        }`}
+                    onClick={() => handleTabClick("tutorial")}
+                >
+                    Tutorial
+                </Link>
+            </div>
 
             <div className="flex gap-2 items-center">
                 <div className="flex justify-center items-center gap-2 mr-10">
