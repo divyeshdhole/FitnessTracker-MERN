@@ -574,14 +574,14 @@ const generateResponse = async (req, res) => {
 const getDates = async (req, res) => {
     try {
         const userId = req.user.id; // Assuming you have `req.user` from auth middleware
-        const user = await User.findOne({ _id: userId });
+        const user = await User.findOne({ _id: userId }).populate('workouts');
         // console.log(user);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
         //populate with workouts
 
-        const dates = user.populate("workouts").map(workout => workout.date);
+        const dates = user.workouts.map(workout => workout.date);
 
         console.log(dates);
         res.status(200).json(dates);
