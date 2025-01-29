@@ -22,6 +22,46 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 const genAI = new GoogleGenerativeAI("AIzaSyAjdJL8z8VhFEwsCrLxxC__kLKgFtJZAvA");
 const Fuse = require('fuse.js');
 
+const updateStreak = async (userId) => {
+    try {
+        const user = await User.findById(userId); // Fetch user data
+        const today = new Date();
+        const lastActivity = new Date(user.lastActivityDate);
+
+        // Format dates to compare only the year, month, and day
+        const formatDate = (date) => new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        const formattedToday = formatDate(today);
+        const formattedLastActivity = formatDate(lastActivity);
+
+        console.log("User's last activity date:", formattedLastActivity);
+        console.log("Today's date:", formattedToday);
+
+        if (formattedLastActivity.getTime() === formattedToday.getTime()) {
+            // No update needed if the activity is already logged today
+            console.log("Activity already logged today. Streak remains:", user.streak);
+        } else if ((formattedToday - formattedLastActivity) / (1000 * 3600 * 24) === 1 || !user.lastActivityDate) {
+            // Increment streak if activity is on the next day
+            user.streak += 1;
+            console.log("Streak incremented. New streak:", user.streak);
+        } else {
+            // Reset streak if more than one day has passed
+            user.streak = 1; // Reset streak to 1 for today
+            console.log("Streak reset. New streak:", user.streak);
+        }
+
+        // Update last activity date to today
+        user.lastActivityDate = today;
+
+        // Save the updated user document
+        await user.save();
+
+        return user.streak;
+    } catch (error) {
+        console.error("Error updating streak:", error);
+    }
+};
+
+const cron = require('node-cron');
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, 'uploads/'); // Make sure the 'uploads' folder exists in your project
@@ -46,6 +86,20 @@ const upload = multer({
         } else {
             cb(new Error('Only JPG, JPEG, and PNG files are allowed'));
         }
+    }
+});
+cron.schedule('0 0 * * *', async () => {
+    try {
+        const users = await User.find();
+
+        // Update streak for all users at midnight
+        for (const user of users) {
+            await updateStreak(user.id);
+        }
+
+        console.log('Streaks updated for all users');
+    } catch (error) {
+        console.error('Error updating streaks:', error);
     }
 });
 app.use('/uploads', express.static('uploads'));
@@ -117,6 +171,18 @@ const userSchema = new mongoose.Schema({
     credit: {
         type: Number,
         default: 3
+    },
+    lastActivityDate: {
+        type: Date,
+        default: () => {
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1); // Subtract 1 day
+            return yesterday;
+        },
+    },
+    streak: {
+        type: Number,
+        default: 0
     }
 
 
@@ -185,7 +251,7 @@ app.post("/login", async (req, res) => {
             const token = jwt.sign({ id: user._id }, secretKey, { expiresIn: "1d" });
 
             // Send token to the frontend
-            res.status(200).send({ message: "Logged in", token, user: { name: user.name, profilePhoto: user.profilePhoto, credit: user.credit } });
+            res.status(200).send({ message: "Logged in", token, user: { name: user.name, profilePhoto: user.profilePhoto, credit: user.credit, streak: user.streak } });
         });
     } catch (error) {
         console.error("Login error:", error);
@@ -241,7 +307,7 @@ app.post("/register", async (req, res) => {
         console.log(req.body.password); // Debugging logs
 
         // Send a success response with the token
-        res.status(201).send({ message: "User registered", token, user: { name: user.name, profilePhoto: user.profilePhoto, credit: user.credit } });
+        res.status(201).send({ message: "User registered", token, user: { name: user.name, profilePhoto: user.profilePhoto, credit: user.credit, streak: user.streak } });
     } catch (error) {
         console.error("Error in /register:", error);
 
@@ -403,8 +469,9 @@ const addWorkout = async (req, res) => {
         const user = await User.findById(req.user.id)
             .populate('workouts');
         user.workouts.push(newWorkout);
+        console.log("user date: " + user.lastActivityDate + " date: " + Date.now());
+        const streak = await updateStreak(user._id);
         user.credit = user.credit + 1;
-
         user.save();
         // Calculate total calories burned for the new workout
         const durationInMinutes = duration;
@@ -416,7 +483,7 @@ const addWorkout = async (req, res) => {
         // console.log("Calories burned:", caloriesBurned);
         // console.log("saved");
 
-        res.status(201).json({ message: "Workout added successfully!", workout: newWorkout, credit: user.credit });
+        res.status(201).json({ message: "Workout added successfully!", workout: newWorkout, credit: user.credit, streak: streak });
     } catch (err) {
         console.log(err);
         res.status(500).json({ message: "Server error" });
