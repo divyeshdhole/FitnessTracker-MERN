@@ -11,7 +11,8 @@ import { FaCoins } from "react-icons/fa6";
 import url_api from "../constant";
 import { GiTwoCoins } from "react-icons/gi";
 import { Tooltip, IconButton } from "@mui/material";
-
+import { BsFire } from "react-icons/bs";
+import ShowStreak from "./ShowStreak";
 const Navbar = ({ setOpen, setIsUser, update }) => {
     const location = useLocation();
     const aTab = location.pathname.split('/')[1];
@@ -22,9 +23,16 @@ const Navbar = ({ setOpen, setIsUser, update }) => {
     const [profilePhoto, setProfilePhoto] = useState(null);
     const [showPhoto, setShowPhoto] = useState(false);
     const [credit, setCredit] = useState(null);
+    const [streak, setStreak] = useState(JSON.parse(localStorage.getItem('user')).streak);
+    const [showStreak, setShowStreak] = useState(false);
     useEffect(() => {
         const user = JSON.parse(localStorage.getItem("user"));
+
         setCredit(user.credit);
+        if (streak !== user.streak) {
+            setShowStreak(!showStreak)
+        }
+        setStreak(user.streak);
         if ("profilePhoto" in user) {
             console.log("this is user from navbar compoennet", user)
             setProfilePhoto(user.profilePhoto);
@@ -111,7 +119,10 @@ const Navbar = ({ setOpen, setIsUser, update }) => {
                 </Link>
             </div>
 
-            <div className={`lg:hidden flex flex-col bg-white shadow-lg absolute top-[70px] left-0 w-full z-10 p-4 rounded-lg transition-all ${isOpen ? "opacity-100" : "opacity-0 translate-y-0"}`}>
+            <div className={`lg:hidden flex flex-col bg-white shadow-lg absolute top-[90px] left-0 w-full z-10 p-4 rounded-lg ${isOpen
+                ? "transition ease-in-out duration-300 transform translate-y-0 opacity-100"
+                : "transition ease-in-out duration-300 transform opacity-0 translate-y-2 pointer-events-none"
+                }`}>
                 <Link
                     to="/dashboard"
                     className={`${activeTab === "dashboard" || activeTab === ""
@@ -144,8 +155,18 @@ const Navbar = ({ setOpen, setIsUser, update }) => {
                 </Link>
             </div>
 
-            <div className="flex gap-2 items-center">
-                <div className="flex justify-center items-center gap-2 mr-10">
+            <div className="flex gap-1 items-center">
+                <div className="flex justify-center items-center gap-1 mr-10">
+
+                    <Tooltip title="Fire Value: Represent Streak!" arrow>
+                        <IconButton>
+                            <BsFire className="text-3xl text-orange-500 cursor-pointer" />
+                        </IconButton>
+                    </Tooltip>
+                    <p className="text-orange-500">{streak}</p>
+                </div>
+                <div className="flex justify-center items-center gap-1 mr-10">
+
                     <Tooltip title="💰 Coin Value: Represents your available credits. Earn more by adding workouts!" arrow>
                         <IconButton>
                             <GiTwoCoins className="text-3xl text-yellow-600 cursor-pointer" />
@@ -154,7 +175,7 @@ const Navbar = ({ setOpen, setIsUser, update }) => {
 
                     </Tooltip>
 
-                    {credit}
+                    <p className="text-yellow-600">{credit}</p>
                 </div>
                 {
                     profilePhoto !== null ? (<div onClick={showProfilePhoto} className="flex rounded-full size-8 bg-gray-500 shadow-2xl justify-center items-center cursor-pointer"><img className="rounded-full size-8 shadow-xl border border-gray-400" src={url_api + profilePhoto}></img></div>) : <FaUserCircle onClick={handleProfileClick} className="text-3xl text-gray-600 cursor-pointer" />
@@ -166,7 +187,7 @@ const Navbar = ({ setOpen, setIsUser, update }) => {
 
             {profileClick && <UploadPhoto handleProfileClick={handleProfileClick} />}
             {showPhoto && <ShowPhoto showProfilePhoto={showProfilePhoto} />}
-
+            {showStreak && <ShowStreak setShowStreak={setShowStreak} showStreak={showStreak} streak={streak} />}
         </div >
     );
 };

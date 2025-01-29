@@ -60,7 +60,7 @@ const AddWorkout = ({ setIsWorkoutAdded }) => {
             if (response.ok) {
                 const user = JSON.parse(localStorage.getItem('user'));
                 user.credit = data.credit;
-
+                user.streak = data.streak;
                 localStorage.setItem('user', JSON.stringify(user));
 
                 // Success message and UI update
